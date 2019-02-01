@@ -88,3 +88,13 @@ aAndB = zip [1, 2, 3] [4, 5, 6] -- [(1, 4), (2, 5), (3, 6)]
 
 listOfSums = zipWith (+) [1, 2, 3] [4, 5, 6] -- [5, 7, 9]
 
+-- folding lists
+sameAsSum = foldr (+) 0 [1 .. 5] -- 15
+
+-- how foldr associates
+xs = map show [1 .. 5]
+
+y = foldr (\x y -> concat ["(", x, "+", y, ")"]) "0" xs
+
+myAny :: (a -> Bool) -> [a] -> Bool
+myAny f xs = foldr (\x b -> f x || b) False xs
