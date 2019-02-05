@@ -98,3 +98,77 @@ y = foldr (\x y -> concat ["(", x, "+", y, ")"]) "0" xs
 
 myAny :: (a -> Bool) -> [a] -> Bool
 myAny f xs = foldr (\x b -> f x || b) False xs
+
+-- folding left
+rightFoldedList = foldr (:) [] [1 .. 3] -- [1, 2, 3]
+
+leftFoldedList = foldl (flip (:)) [] [1 .. 3] -- [3, 2, 1
+
+-- Fibonacci using `scanl`
+fibs = 1 : scanl (+) 1 fibs
+
+-- indexed from 0
+--fibN n = fibs !! n
+-- indexed from 1
+fibN n = fibs !! index
+  where
+    index =
+      if n > 0
+        then n - 1
+        else n
+
+-- factorial using `foldl`
+factorial :: Integer -> Integer
+factorial n = foldl (*) 1 [1 .. n]
+
+stops = "pbtdkg"
+
+vowels = "aeiou"
+
+stopVowelStop = [[x, y, z] | x <- stops, y <- vowels, z <- stops]
+
+stopVowelStop' = [[x, y, z] | x <- stops', y <- vowels', z <- stops']
+  where
+    stops' = "pbtdkg"
+    vowels' = "aeiou"
+
+myFoldedAnd :: [Bool] -> Bool
+myFoldedAnd = foldr (&&) True
+
+myFoldedOr :: [Bool] -> Bool
+myFoldedOr = foldr (||) False
+
+myFoldedAny :: (a -> Bool) -> [a] -> Bool
+myFoldedAny f xs = myFoldedOr vals
+  where
+    vals = map f xs
+
+myElem :: Eq a => a -> [a] -> Bool
+myElem item = foldr (\val run -> (val == item) || run) False
+
+myElemAny :: Eq a => a -> [a] -> Bool
+myElemAny item = any (== item)
+
+myReverse :: [a] -> [a]
+myReverse = foldl (flip (:)) []
+
+myMap :: (a -> b) -> [a] -> [b]
+myMap f = foldr (\x y -> f x : y) []
+
+myFilter :: (a -> Bool) -> [a] -> [a]
+myFilter f = foldr (\x y -> if (f x) then x : y else y) []
+
+squish :: [[a]] -> [a]
+squish = foldr (++) []
+
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap f = foldr (\x y -> f x ++ y) []
+
+squishAgain :: [[a]] -> [a]
+squishAgain f = foldr (\x y -> squishMap (\x -> f x) ++ y) []
+
+
+
+
+
+
