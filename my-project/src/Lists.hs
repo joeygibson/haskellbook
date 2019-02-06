@@ -156,7 +156,13 @@ myMap :: (a -> b) -> [a] -> [b]
 myMap f = foldr (\x y -> f x : y) []
 
 myFilter :: (a -> Bool) -> [a] -> [a]
-myFilter f = foldr (\x y -> if (f x) then x : y else y) []
+myFilter f =
+  foldr
+    (\x y ->
+       if (f x)
+         then x : y
+         else y)
+    []
 
 squish :: [[a]] -> [a]
 squish = foldr (++) []
@@ -165,10 +171,26 @@ squishMap :: (a -> [b]) -> [a] -> [b]
 squishMap f = foldr (\x y -> f x ++ y) []
 
 squishAgain :: [[a]] -> [a]
-squishAgain f = foldr (\x y -> squishMap (\x -> f x) ++ y) []
+squishAgain = squishMap (\x -> x)
 
+myMaximumBy :: (a -> a -> Ordering) -> [a] -> a
+myMaximumBy f (x:xs) =
+  foldl
+    (\a b ->
+       case f a b of
+         GT -> a
+         EQ -> a
+         LT -> b)
+    x
+    xs
 
-
-
-
-
+myMinimumBy :: (a -> a -> Ordering) -> [a] -> a
+myMinimumBy f (x:xs) =
+  foldl
+    (\a b ->
+      case f a b of
+        LT -> a
+        EQ -> a
+        GT -> b)
+    x
+    xs
