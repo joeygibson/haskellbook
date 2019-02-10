@@ -498,5 +498,15 @@ postOrder Leaf                = []
 postOrder (Node left a right) = postOrder left ++ postOrder right ++ [a]
 
 -- foldr for BinaryTree
---foldTree :: (a -> b -> b) -> b -> BinaryTree a -> b
---foldTree (Node left a right) =
+foldTree :: (a -> b -> b) -> b -> BinaryTree a -> b
+foldTree _ b Leaf = b
+foldTree f b (Node left a right)
+  -- preorder
+  -- foldTree f (foldTree f (f a b) left) right
+  -- inorder
+  -- foldTree f (f a (foldTree f b left)) right
+  -- postorder
+ = f a (foldTree f (foldTree f b left) right)
+--foldTree f zero tree =
+--  let asList = preOrder tree
+--   in foldr f zero asList
