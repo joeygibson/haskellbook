@@ -1,5 +1,9 @@
 module Types where
 
+import           Data.Char
+import           Data.List
+import           Data.Maybe
+
 data Trivial =
   Trivial'
 
@@ -507,6 +511,127 @@ foldTree f b (Node left a right)
   -- foldTree f (f a (foldTree f b left)) right
   -- postorder
  = f a (foldTree f (foldTree f b left) right)
+
 --foldTree f zero tree =
 --  let asList = preOrder tree
 --   in foldr f zero asList
+-- as-patterns
+fAs :: Show a => (a, b) -> IO (a, b)
+fAs t@(a, _) = do
+  print a
+  return t
+
+doubleUp :: [a] -> [a]
+doubleUp []       = []
+doubleUp xs@(x:_) = x : xs
+
+isSubseqOf :: Eq a => [a] -> [a] -> Bool
+isSubseqOf [] _ = True
+isSubseqOf _ [] = False
+isSubseqOf needles@(n:ns) (h:hs)
+  | n == h = isSubseqOf ns hs
+  | otherwise = isSubseqOf needles hs
+
+capitalizeWords :: String -> [(String, String)]
+capitalizeWords [] = []
+capitalizeWords str = map go (words str)
+  where
+    go orig@(x:xs) = (orig, toUpper x : xs)
+
+capitalizeWord :: String -> String
+capitalizeWord []     = []
+capitalizeWord (x:xs) = toUpper x : xs
+
+capitalizeParagraph :: String -> String
+capitalizeParagraph "" = ""
+capitalizeParagraph text = capitalizeWord s1 ++ sep ++ capitalizeParagraph remainder
+  where
+    s1 = takeWhile (/= '.') text
+    sep = takeWhile (`elem` ". ") (drop (length s1) text)
+    remainder = drop (length s1 + length sep) text
+
+-- phone exercise
+newtype DaPhone =
+  DaPhone [(Char, String)]
+
+daPhone =
+  DaPhone
+    [ ('1', "")
+    , ('2', "abc2")
+    , ('3', "def3")
+    , ('4', "ghi4")
+    , ('5', "jkl5")
+    , ('6', "mno6")
+    , ('7', "pqrs7")
+    , ('8', "tuv8")
+    , ('9', "wxyz9")
+    , ('*', "^*")
+    , ('0', " +-0")
+    , ('#', ".#")
+    ]
+
+convo :: [String]
+convo =
+  [ "Wanna play 20 questions"
+  , "Ya"
+  , "U 1st haha"
+  , "Lol ok. Have u ever tasted alcohol"
+  , "Lol ya"
+  , "Wow ur cool haha. Ur turn"
+  , "Ok. Do u think I am pretty Lol"
+  , "Lol ya"
+  , "Just making sure rofl ur turn"
+  ]
+
+type Digit = Char
+
+type Presses = Int
+
+getPresses :: Char -> String -> Int
+getPresses c cs = fromMaybe 0 (c `elemIndex` cs) + 1
+
+findOnPhone :: DaPhone -> Char -> (Digit, Presses)
+findOnPhone (DaPhone buttons) char =
+  case find correct buttons of
+    Just (d, cs) -> (d, getPresses c cs)
+    Nothing      -> ('?', 0)
+  where
+    correct (_, cs) = c `elem` cs
+    c = toLower char
+
+reverseTaps :: DaPhone -> Char -> [(Digit, Presses)]
+reverseTaps phone c =
+  case ucKey of
+    Just key -> key : [mainKey]
+    Nothing  -> [mainKey]
+  where
+    mainKey = findOnPhone phone (toLower c)
+    ucKey =
+      if isUpper c
+        then Just (findOnPhone phone '^')
+        else Nothing
+
+cellPhonesDead :: DaPhone -> String -> [(Digit, Presses)]
+cellPhonesDead phone = concatMap (reverseTaps phone)
+
+fingerTaps :: [(Digit, Presses)] -> Presses
+fingerTaps = sum . map snd
+
+mostPopular :: Ord c => [c] -> c
+mostPopular = head . head . sortOn (negate . length) . group . sort
+
+--mostPopularStrippingSpaces :: Ord c => [c] -> c
+--mostPopularStrippingSpaces = mostPopular $ filter (not . isSpace)
+-- Hutton’s Razor
+data Expr
+  = Lit Integer
+  | Add Expr
+        Expr
+
+eval :: Expr -> Integer
+eval (Lit i)   = i
+eval (Add x y) = eval x + eval y
+
+printExpr :: Expr -> String
+printExpr (Lit i)   = show i
+printExpr (Add x y) = printExpr x ++ " + " ++ printExpr y
