@@ -2,12 +2,14 @@ module Main where
 
 import           Control.Monad (forever)
 import           Data.Char     (toLower)
-import           Data.List     (intersperse)
+import           Data.List     (intersperse, sort)
 import           Data.Maybe    (isJust)
 import           System.Exit   (exitSuccess)
 import           System.Random (randomRIO)
 
-type WordList = [String]
+newtype WordList =
+  WordList [String]
+  deriving (Eq, Show)
 
 data Puzzle =
   Puzzle String
@@ -16,30 +18,30 @@ data Puzzle =
 
 instance Show Puzzle where
   show (Puzzle _ discovered guessed) =
-    (intersperse ' ' $ fmap renderPuzzleChar discovered) ++ " Guessed so far: " ++ guessed
+    (intersperse ' ' $ fmap renderPuzzleChar discovered) ++ " Guessed so far: " ++ sort guessed
 
 minWordLength :: Int
 minWordLength = 5
 
 maxWordLength :: Int
-maxWordLength = 9
+maxWordLength = 7
 
 allWords :: IO WordList
 allWords = do
   dict <- readFile "data/dict.txt"
-  return (lines dict)
+  return $ WordList (lines dict)
 
 gameWords :: IO WordList
 gameWords = do
-  aw <- allWords
-  return (filter gameLength aw)
+  (WordList aw) <- allWords
+  return $ WordList (filter gameLength aw)
   where
     gameLength w =
       let l = length (w :: String)
        in l >= minWordLength && l < maxWordLength
 
 randomWord :: WordList -> IO String
-randomWord wl = do
+randomWord (WordList wl) = do
   randomIndex <- randomRIO (0, length wl)
   return $ wl !! randomIndex
 
@@ -74,9 +76,7 @@ handleGuess puzzle guess = do
   putStrLn $ "Your guess was: " ++ [guess]
   case (charInWord puzzle guess, alreadyGuessed puzzle guess) of
     (_, True) -> do
-      putStrLn
-        "You already guessed that \
-                \ character, pick something else"
+      putStrLn "You already guessed that character, pick something else"
       return puzzle
     (True, _) -> do
       putStrLn "This character was in the word"
@@ -86,8 +86,8 @@ handleGuess puzzle guess = do
       return (fillInCharacter puzzle guess)
 
 gameOver :: Puzzle -> IO ()
-gameOver (Puzzle wordToGuess _ guessed) =
-  if (length guessed) > 7
+gameOver (Puzzle wordToGuess filledInSoFar guessed) =
+  if length guessed - length filledInSoFar > 10
     then do
       putStrLn "You lose."
       putStrLn $ "The word was: " ++ wordToGuess
@@ -95,10 +95,11 @@ gameOver (Puzzle wordToGuess _ guessed) =
     else return ()
 
 gameWin :: Puzzle -> IO ()
-gameWin (Puzzle _ filledInSoFar _) =
+gameWin puzzle@(Puzzle _ filledInSoFar _) =
   if all isJust filledInSoFar
     then do
       putStrLn "You win!"
+      putStrLn $ show puzzle
       exitSuccess
     else return ()
 
