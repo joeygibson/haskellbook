@@ -292,3 +292,17 @@ treeBuild n = unfoldTree gen 0
       if x == n
         then Nothing
         else Just (x + 1, x, x + 1)
+
+gimmePerson :: IO ()
+gimmePerson = do
+  putStr "Enter person name: "
+  name <- getLine
+  putStr "Enter age: "
+  ageStr <- getLine
+  let age = read ageStr :: Integer
+   in case mkPerson name age of
+        Right person -> do
+          putStrLn $ "Yay! Successfully got a person: " ++ show person
+        Left errors -> do
+          putStrLn $ "Error! " ++ show errors
+--  return

@@ -1,6 +1,9 @@
 module Cipher where
 
+import           Control.Monad
 import           Data.Char
+import           Data.Char
+import           System.Exit   (exitSuccess)
 
 caesar :: String -> Int -> String
 caesar [] _ = ""
@@ -27,6 +30,15 @@ uncaesar text n = map cnv text
        in if cMinusN >= ordA
             then chr cMinusN
             else chr (ordZ - (ordA - cMinusN - 1))
+
+consoleCaesar :: IO String
+consoleCaesar = do
+  putStr "Enter some text to encrypt: "
+  text <- getLine
+  putStr "Enter number of characters to shift: "
+  shiftStr <- getLine
+  let shift = read shiftStr :: Int
+   in return $ caesar text shift
 
 -- Vigenère cipher
 pairUp :: String -> String -> [(Char, Char)]
@@ -57,3 +69,23 @@ vig str salt =
             else if cPlusN <= ordZ
                    then chr cPlusN
                    else chr (ordA + (cPlusN - ordZ - 1))
+
+consoleVig :: IO String
+consoleVig = do
+  putStr "Enter text to encrypt: "
+  text <- getLine
+  putStr "Enter salt: "
+  salt <- getLine
+  return $ vig text salt
+
+palindrome :: IO ()
+palindrome =
+  forever $ do
+    putStr "Enter some text to check for palindromity: "
+    line1 <- getLine
+    let lcLine1 = map toLower $ filter (not . isPunctuation) $ filter (not . isSpace) line1
+        revLcLine1 = reverse lcLine1
+     in if lcLine1 == revLcLine1
+          then putStrLn "It's a palindrome."
+          else (do putStrLn "Nope."
+                   exitSuccess)
