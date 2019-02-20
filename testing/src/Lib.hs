@@ -1,8 +1,6 @@
 module Lib
-  ( sayHello
-  ) where
+    ( someFunc
+    ) where
 
-import           Test.Hspec
-
-sayHello :: IO ()
-sayHello = putStrLn "Hello!"
+someFunc :: IO ()
+someFunc = putStrLn "someFunc"
