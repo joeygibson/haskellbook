@@ -4,16 +4,16 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d9818213f0ef3998d9c35803f4c14f3088bbeb2d0dd71fa6593ec2d57440dfbb
+-- hash: 6fc2b962712c5274d2001bfa37ca631b58e034212aa8f4f767f5f91a647316f8
 
 name:           testing
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/testing#readme>
-homepage:       https://github.com/githubuser/testing#readme
-bug-reports:    https://github.com/githubuser/testing/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2019 Author name here
+description:    Please see the README on GitHub at <https://github.com/joeygibson/haskellbook/testing#readme>
+homepage:       https://github.com/joeygibson/haskellbook#readme
+bug-reports:    https://github.com/joeygibson/haskellbook/issues
+author:         Joey Gibson
+maintainer:     joey@joeygibson.com
+copyright:      2019 Joey Gibson
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -23,10 +23,12 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/testing
+  location: https://github.com/joeygibson/haskellbook
+  subdir: testing
 
 library
   exposed-modules:
+      Addition
       Lib
   other-modules:
       Paths_testing
@@ -57,6 +59,8 @@ test-suite testing-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      QuickCheck
+    , base >=4.7 && <5
+    , hspec
     , testing
   default-language: Haskell2010
