@@ -4,6 +4,7 @@ import qualified Data.Map            as M
 import           Morse
 import           Test.QuickCheck
 import           Test.QuickCheck.Gen (oneof)
+import           WordNumberTest
 
 allowedChars :: [Char]
 allowedChars = M.keys letterToMorse
@@ -86,6 +87,8 @@ sumGenCharIntFirst :: Gen (Sum Char Int)
 sumGenCharIntFirst = sumGenFirstPls
 
 main :: IO ()
---main = quickCheck prop_thereAndBackAgain
---main = sample pairGenIntString
-main = quickCheck prop_backAndThereAgain
+main = do
+  quickCheck prop_thereAndBackAgain
+  quickCheck prop_backAndThereAgain
+  wordNumberTests
+  otherTests
