@@ -92,3 +92,7 @@ main = do
   quickCheck prop_backAndThereAgain
   wordNumberTests
   otherTests
+  orderingTests
+  additionTests
+  divisionTests
+  powerTests
