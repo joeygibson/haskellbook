@@ -1,5 +1,6 @@
 module WordNumberTest where
 
+import           Data.Char
 import           Data.List
 import           Exercises                (digitToWord, digits, half,
                                            wordNumber)
@@ -70,6 +71,56 @@ prop_powerAssoc x y z = x ^ (y ^ z) == (x ^ y) ^ z
 prop_powerCommutative :: (Integral a, Eq a) => a -> a -> Bool
 prop_powerCommutative x y = x ^ y == y ^ x
 
+prop_reverseReverse :: (Ord a) => [a] -> Bool
+prop_reverseReverse xs = (reverse . reverse $ xs) == xs
+
+prop_apply :: Eq a => a -> Bool
+prop_apply a = id a == (id $ a)
+
+prop_foldrAppnd :: Eq a => [a] -> [a] -> Bool
+prop_foldrAppnd xs tx = foldr (:) [] xs == xs ++ tx
+
+prop_foldrConcat :: Eq a => [[a]] -> Bool
+prop_foldrConcat xs = foldr (++) [] xs == concat xs
+
+prop_takeN :: Int -> [a] -> Bool
+prop_takeN n xs = length (take n xs) == n
+
+prop_readAndShow :: (Read a, Show a, Eq a) => a -> Bool
+prop_readAndShow x = (read . show) x == x
+
+square :: Num a => a -> a
+square x = x * x
+
+prop_square :: (Eq a, Floating a) => a -> Bool
+prop_square x = (sqrt . square) x == x
+
+twice f = f . f
+
+fourTimes = twice . twice
+
+capitalizeWord :: String -> String
+capitalizeWord ""     = ""
+capitalizeWord (x:xs) = toUpper x : xs
+
+prop_idem :: String -> Bool
+prop_idem x = (capitalizeWord x == twice capitalizeWord x) && (capitalizeWord x == fourTimes capitalizeWord x)
+
+prop_idemSort :: (Eq a, Ord a) => [a] -> Bool
+prop_idemSort xs = (sort xs == twice sort xs) && (sort xs == fourTimes sort xs)
+
+data Fool
+  = Fulse
+  | Frue
+  deriving (Eq, Show)
+
+genFoolEqual :: Gen Fool
+genFoolEqual = elements [Fulse, Frue]
+
+genFoolNotEqual :: Gen Fool
+genFoolNotEqual = frequency [(2, return Fulse), (1, return Frue)]
+
+-------
 otherTests :: IO ()
 otherTests =
   hspec $ describe "half" $ it "is the inverse of douling (Float)" $ property (prop_halfIdentity :: Float -> Bool)
@@ -112,3 +163,42 @@ powerTests =
   describe "powers" $ do
     it "shows exp is associative" $ expectFailure (prop_powerAssoc :: Int -> Int -> Int -> Bool)
     it "shows exp is commutative" $ expectFailure (prop_powerCommutative :: Int -> Int -> Bool)
+
+reverseTests :: IO ()
+reverseTests =
+  hspec $
+  describe "reverse . reverse" $ do
+    it "shows reverse . reverse == id (String)" $ property (prop_reverseReverse :: String -> Bool)
+    it "shows reverse . reverse == id (Int)" $ property (prop_reverseReverse :: [Int] -> Bool)
+
+applyTests :: IO ()
+applyTests = hspec $ describe "($)" $ it "shows definition of ($)" $ property (prop_apply :: [Int] -> Bool)
+
+foldrTests :: IO ()
+foldrTests =
+  hspec $
+  describe "foldr" $ do
+    it "++ is same as :" $ expectFailure (prop_foldrAppnd :: [Int] -> [Int] -> Bool)
+    it "++ same as concat" $ property (prop_foldrConcat :: [[Int]] -> Bool)
+
+takeNTests :: IO ()
+takeNTests =
+  hspec $
+  describe "this sometimes fails" $ it "length (take n xs) == n" $ expectFailure (prop_takeN :: Int -> [Int] -> Bool)
+
+readAndShowTests :: IO ()
+readAndShowTests =
+  hspec $ describe "read and show" $ it "are reciprocal" $ property (prop_readAndShow :: String -> Bool)
+
+squareTests :: IO ()
+squareTests = hspec $ describe "square" $ it "identity" $ expectFailure (prop_square :: Double -> Bool)
+
+idemTests :: IO ()
+idemTests =
+  hspec $
+  describe "idempotency" $ do
+    it "2x and 4x are the same" $ property (prop_idem :: String -> Bool)
+    it "sorting again is sorting (String)" $ property (prop_idemSort :: String -> Bool)
+    it "sorting again is sorting (Int)" $ property (prop_idemSort :: [Int] -> Bool)
+    it "sorting again is sorting (Double)" $ property (prop_idemSort :: [Double] -> Bool)
+    it "sorting again is sorting (Double)" $ property (prop_idemSort :: [String] -> Bool)

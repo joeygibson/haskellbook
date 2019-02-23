@@ -96,3 +96,10 @@ main = do
   additionTests
   divisionTests
   powerTests
+  reverseTests
+  applyTests
+  foldrTests
+  takeNTests
+  readAndShowTests
+  squareTests
+  idemTests
