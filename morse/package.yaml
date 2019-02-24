@@ -51,3 +51,4 @@ tests:
     - QuickCheck
     - containers
     - hspec
+    - random

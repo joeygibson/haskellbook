@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Data.Map            as M
+import           HangmanTests        (hangmanTests)
 import           Morse
 import           Test.QuickCheck
 import           Test.QuickCheck.Gen (oneof)
@@ -103,3 +104,4 @@ main = do
   readAndShowTests
   squareTests
   idemTests
+  hangmanTests
