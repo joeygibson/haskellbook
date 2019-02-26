@@ -6,6 +6,7 @@ import           Morse
 import           Test.QuickCheck
 import           Test.QuickCheck.Gen (oneof)
 import           WordNumberTest
+import CipherTest (cipherTests)
 
 allowedChars :: [Char]
 allowedChars = M.keys letterToMorse
@@ -105,3 +106,4 @@ main = do
   squareTests
   idemTests
   hangmanTests
+  cipherTests
